@@ -153,7 +153,7 @@ namespace StimulsoftMvcSample.Controllers
             return View();
         }
 
-
+        //ok
         //جهت اجرای دیزاینر از منوی سایت
         [Route("[Controller]/[Action]/{Reportname?}")]
         public async Task<IActionResult> GetDesignerReport(string Reportname)
