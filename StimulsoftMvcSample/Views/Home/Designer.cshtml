@@ -1,0 +1,19 @@
+﻿@using Stimulsoft.Report.Mvc
+
+
+@Html.StiNetCoreDesigner(
+new StiNetCoreDesignerOptions() {
+
+Actions ={
+GetReport = "GetDesignerReport",
+SaveReport="SaveReport",
+DesignerEvent = "DesignerEvent"
+},
+Appearance={
+ Zoom=80,
+
+},
+//Width=new Stimulsoft.System.Web.UI.WebControls.Unit(100,Stimulsoft.System.Web.UI.WebControls.UnitType.Percentage),
+//Height=new Stimulsoft.System.Web.UI.WebControls.Unit(800,Stimulsoft.System.Web.UI.WebControls.UnitType.Pixel),
+
+})
