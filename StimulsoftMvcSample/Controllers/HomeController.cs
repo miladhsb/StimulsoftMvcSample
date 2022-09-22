@@ -13,7 +13,7 @@ namespace StimulsoftMvcSample.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly List<Person> people = new();
+        private  List<Person> people = new();
 
         public HomeController()
         {
@@ -22,7 +22,7 @@ namespace StimulsoftMvcSample.Controllers
             people.Add(new Person("vahid", "vahidi", 12));
 
             #region Active 
-           // Stimulsoft.Base.StiLicense.LoadFromString("6vJhGtLLLz2GNviWmUTrhSqnOItdDwjBylQzQcAOiHl2AD0gPVknKsaW0un+3PuM6TTcPMUAWEURKXNso0e5OFPaZYasFtsxNoDemsFOXbvf7SIcnyAkFX/4u37NTfx7g+0IqLXw6QIPolr1PvCSZz8Z5wjBNakeCVozGGOiuCOQDy60XNqfbgrOjxgQ5y/u54K4g7R/xuWmpdx5OMAbUbcy3WbhPCbJJYTI5Hg8C/gsbHSnC2EeOCuyA9ImrNyjsUHkLEh9y4WoRw7lRIc1x+dli8jSJxt9C+NYVUIqK7MEeCmmVyFEGN8mNnqZp4vTe98kxAr4dWSmhcQahHGuFBhKQLlVOdlJ/OT+WPX1zS2UmnkTrxun+FWpCC5bLDlwhlslxtyaN9pV3sRLO6KXM88ZkefRrH21DdR+4j79HA7VLTAsebI79t9nMgmXJ5hB1JKcJMUAgWpxT7C7JUGcWCPIG10NuCd9XQ7H4ykQ4Ve6J2LuNo9SbvP6jPwdfQJB6fJBnKg4mtNuLMlQ4pnXDc+wJmqgw25NfHpFmrZYACZOtLEJoPtMWxxwDzZEYYfT");
+            Stimulsoft.Base.StiLicense.LoadFromString("6vJhGtLLLz2GNviWmUTrhSqnOItdDwjBylQzQcAOiHl2AD0gPVknKsaW0un+3PuM6TTcPMUAWEURKXNso0e5OFPaZYasFtsxNoDemsFOXbvf7SIcnyAkFX/4u37NTfx7g+0IqLXw6QIPolr1PvCSZz8Z5wjBNakeCVozGGOiuCOQDy60XNqfbgrOjxgQ5y/u54K4g7R/xuWmpdx5OMAbUbcy3WbhPCbJJYTI5Hg8C/gsbHSnC2EeOCuyA9ImrNyjsUHkLEh9y4WoRw7lRIc1x+dli8jSJxt9C+NYVUIqK7MEeCmmVyFEGN8mNnqZp4vTe98kxAr4dWSmhcQahHGuFBhKQLlVOdlJ/OT+WPX1zS2UmnkTrxun+FWpCC5bLDlwhlslxtyaN9pV3sRLO6KXM88ZkefRrH21DdR+4j79HA7VLTAsebI79t9nMgmXJ5hB1JKcJMUAgWpxT7C7JUGcWCPIG10NuCd9XQ7H4ykQ4Ve6J2LuNo9SbvP6jPwdfQJB6fJBnKg4mtNuLMlQ4pnXDc+wJmqgw25NfHpFmrZYACZOtLEJoPtMWxxwDzZEYYfT");
             #endregion
 
         }
@@ -36,16 +36,20 @@ namespace StimulsoftMvcSample.Controllers
 
             return View();
         }
-
+     
         //جهت اجرای پیش نایش گزارش
         public IActionResult ReportView()
         {
             var viewerOptions = new StiNetCoreViewerOptions();
+            //جهت ارسال مقادیر فرم فیلتر
+            viewerOptions.Server.PassFormValues = true;
+            viewerOptions.Server.CacheMode = Stimulsoft.Report.Web.StiServerCacheMode.ObjectCache;
             viewerOptions.Actions.GetReport = "GetReport";
             viewerOptions.Actions.ViewerEvent = "ViewerEvent";
+           
             // viewerOptions.Appearance.FullScreenMode = true;
             viewerOptions.Toolbar.ShowDesignButton = true;
-            viewerOptions.Actions.DesignReport = "DesignReport";
+            viewerOptions.Actions.DesignReport = "Designer";
           
             viewerOptions.Toolbar.Zoom = 75;
            // viewerOptions.Toolbar.PrintDestination = Stimulsoft.Report.Web.StiPrintDestination.Pdf;
@@ -63,9 +67,18 @@ namespace StimulsoftMvcSample.Controllers
         }
 
        [Route("[Controller]/[Action]/{Reportname?}")]
-        public async Task<IActionResult> GetReport(string Reportname)
+      
+        public async Task<IActionResult> GetReport()
         {
-           // var Reportname = "Report";
+            var reportfilter = StiNetCoreViewer.GetFormValues(this);
+
+            if (!string.IsNullOrEmpty(reportfilter["name"]))
+            {
+                people = people.Where(p => p.name == reportfilter["name"]).ToList();
+            }
+             
+
+             var Reportname = "Report";
             var report = StiReport.CreateNewReport();
             if (!string.IsNullOrEmpty(Reportname))
             {
@@ -87,9 +100,9 @@ namespace StimulsoftMvcSample.Controllers
 
         {
 
-            StiReport report = StiNetCoreViewer.GetReportObject(this);
+          //  StiReport report = StiNetCoreViewer.GetReportObject(this);
 
-            ViewBag.ReportName = report.ReportName;
+          //  ViewBag.ReportName = report.ReportName;
 
             return View("Designer");
 
@@ -149,7 +162,12 @@ namespace StimulsoftMvcSample.Controllers
         //جهت اجرای دیزاینر از منوی سایت
         public IActionResult Designer()
         {
-          
+            StiReport report = StiNetCoreViewer.GetReportObject(this);
+            if(report != null)
+            {
+                StiNetCoreViewer.CacheHelper.SaveReport(report, "123456");
+            }
+           
             return View();
         }
 
@@ -157,21 +175,25 @@ namespace StimulsoftMvcSample.Controllers
         [Route("[Controller]/[Action]/{Reportname?}")]
         public async Task<IActionResult> GetDesignerReport(string Reportname)
         {
-         
-            var report = StiReport.CreateNewReport();
-            if (!string.IsNullOrEmpty(Reportname))
+            StiReport report = StiNetCoreViewer.CacheHelper.GetReport("123456");
+            if(report == null)
             {
-                var path = StiNetCoreHelper.MapPath(this, $"wwwroot/{Reportname}.mrt");
-               
-               
-                report.Load(path);
-                
+                report = StiReport.CreateNewReport();
+                if (!string.IsNullOrEmpty(Reportname))
+                {
+                    var path = StiNetCoreHelper.MapPath(this, $"wwwroot/{Reportname}.mrt");
+
+
+                    report.Load(path);
+
+                }
+                report.Dictionary.Databases.Clear();
+                report.DataSources.Clear();
+                var DataSourceName = people.GetType().GetGenericArguments().First().Name;
+                report.RegData(DataSourceName, people);
+                await report.Dictionary.SynchronizeAsync();
             }
-            report.Dictionary.Databases.Clear();
-            report.DataSources.Clear();
-            var DataSourceName = people.GetType().GetGenericArguments().First().Name;
-            report.RegData(DataSourceName, people);
-            await report.Dictionary.SynchronizeAsync();
+            
             return StiNetCoreDesigner.GetReportResult(this, report);
         }
 
