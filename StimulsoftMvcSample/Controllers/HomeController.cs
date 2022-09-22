@@ -191,7 +191,7 @@ namespace StimulsoftMvcSample.Controllers
             var report = StiNetCoreDesigner.GetReportObject(this);
                
             //ذخیره به صورت انکریپت شده
-            report.SavePackedReport(report.ReportFile);
+            //report.SavePackedReport(report.ReportFile);
             //or //ذخیره به صورت ایکس ام ال 
              report.Save(report.ReportFile);
 
