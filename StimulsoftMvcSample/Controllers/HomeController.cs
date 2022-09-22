@@ -95,18 +95,7 @@ namespace StimulsoftMvcSample.Controllers
 
            
         }
-        //جهت اجرای دیزاینر از داخل ریپورت ویو
-        public IActionResult DesignReport()
-
-        {
-
-          //  StiReport report = StiNetCoreViewer.GetReportObject(this);
-
-          //  ViewBag.ReportName = report.ReportName;
-
-            return View("Designer");
-
-        }
+       
 
         public IActionResult ViewerEvent()
         {
