@@ -111,8 +111,8 @@ namespace StimulsoftMvcSample.Controllers
 
             {
                 StiReport report = StiNetCoreViewer.GetReportObject(this);
-
-                 report.RegData(report.DataSources[0].Name, people.Where(p=>p.name=="milad"));
+                var name = requestParams.Interaction.Variables["name"];
+                 report.RegData(report.DataSources[0].Name, people.Where(p=>p.name== name.ToString().Trim()));
 
 
 
