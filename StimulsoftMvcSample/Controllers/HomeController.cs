@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Stimulsoft.Report;
 using Stimulsoft.Report.Mvc;
+using Stimulsoft.Report.Web;
 using StimulsoftMvcSample.Models;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,9 @@ namespace StimulsoftMvcSample.Controllers
             viewerOptions.Server.CacheMode = Stimulsoft.Report.Web.StiServerCacheMode.ObjectCache;
             viewerOptions.Actions.GetReport = "GetReport";
             viewerOptions.Actions.ViewerEvent = "ViewerEvent";
-           
+            viewerOptions.Actions.Interaction = "ViewerInteraction";
+            viewerOptions.Toolbar.ShowParametersButton = true;
+            viewerOptions.Appearance.RightToLeft = true;
             // viewerOptions.Appearance.FullScreenMode = true;
             viewerOptions.Toolbar.ShowDesignButton = true;
             viewerOptions.Actions.DesignReport = "Designer";
@@ -65,6 +68,7 @@ namespace StimulsoftMvcSample.Controllers
 
             return View();
         }
+
 
        [Route("[Controller]/[Action]/{Reportname?}")]
       
@@ -86,6 +90,7 @@ namespace StimulsoftMvcSample.Controllers
                 report.Load(path);
 
             }
+            report.Culture = "fa-IR";
             report.Dictionary.Databases.Clear();
             report.DataSources.Clear();
             var DataSourceName = people.GetType().GetGenericArguments().First().Name;
@@ -95,7 +100,31 @@ namespace StimulsoftMvcSample.Controllers
 
            
         }
-       
+        public IActionResult ViewerInteraction()
+
+        {
+
+
+            StiRequestParams requestParams = StiNetCoreViewer.GetRequestParams(this);
+
+            if (requestParams.Action == StiAction.Variables)
+
+            {
+                StiReport report = StiNetCoreViewer.GetReportObject(this);
+
+                 report.RegData(report.DataSources[0].Name, people.Where(p=>p.name=="milad"));
+
+
+
+
+                return StiNetCoreViewer.InteractionResult(this, report);
+            }
+              
+
+
+            return StiNetCoreViewer.InteractionResult(this);
+
+        }
 
         public IActionResult ViewerEvent()
         {
